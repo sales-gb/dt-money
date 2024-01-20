@@ -1,7 +1,13 @@
+import { useContext } from "react";
 import { Header, SearchForm, Summary } from "../../components";
+import { TransactionsContext } from "../../contexts";
+
 import * as S from "./styles";
+import { dateFormatter, priceFormatter } from "../../utils";
 
 export function Transactions() {
+  const { transactions } = useContext(TransactionsContext);
+
   return (
     <div>
       <Header />
@@ -12,26 +18,23 @@ export function Transactions() {
 
         <S.TransactionsTable>
           <tbody>
-            <tr>
-              <td width="50%">Desenvolvimento de site</td>
-              <td>
-                <S.PriceHighLight variant="income">
-                  R$ 12.000,00
-                </S.PriceHighLight>
-              </td>
-              <td>Venda</td>
-              <td>13/04/2023</td>
-            </tr>
-            <tr>
-              <td width="50%">Méqui</td>
-              <td>
-                <S.PriceHighLight variant="outcome">
-                  - R$ 59,00
-                </S.PriceHighLight>
-              </td>
-              <td>Alimentação</td>
-              <td>09/04/2023</td>
-            </tr>
+            {transactions.map((transaction) => {
+              return (
+                <tr key={transaction.id}>
+                  <td width="50%">{transaction.description}</td>
+                  <td>
+                    <S.PriceHighLight variant={transaction.type}>
+                      {transaction.type === "outcome" && "- "}
+                      {priceFormatter.format(transaction.price)}
+                    </S.PriceHighLight>
+                  </td>
+                  <td>{transaction.category}</td>
+                  <td>
+                    {dateFormatter.format(new Date(transaction.createdAt))}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </S.TransactionsTable>
       </S.TransactionsContainer>
